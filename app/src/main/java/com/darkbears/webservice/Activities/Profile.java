@@ -24,7 +24,7 @@ TextView details;
         String email=getIntent().getStringExtra("email");
 
         details.setText(name + "\n"+userid +"\n"+email);
-//
+// cc
 
 
 

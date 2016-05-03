@@ -22,7 +22,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.darkbears.webservice.R;
+import com.darkbears.webservice.classes.NetworkUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 import org.json.JSONObject;
@@ -41,6 +44,7 @@ TextView login;
 RelativeLayout background;
 String sname,semail,sphone,spassword;
 ProgressDialog pDialog;
+NetworkUtils utils ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ ProgressDialog pDialog;
         initialize();
 
         initonclicklistner();
+        utils = new NetworkUtils(MainActivity.this);
 
     }
 
@@ -75,57 +80,64 @@ ProgressDialog pDialog;
         signup.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_DOWN){
-                    signup.setBackgroundResource(R.drawable.greenbt);
-                    sname=name.getText().toString().trim();
-                    semail=email.getText().toString().trim();
-                    sphone=phone.getText().toString().trim();
-                    spassword=password.getText().toString().trim();
+                if(utils.isConnectingToInternet()){
 
-                  }else {
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        signup.setBackgroundResource(R.drawable.smallbt);
+                    if(event.getAction()==MotionEvent.ACTION_DOWN){
+                        signup.setBackgroundResource(R.drawable.greenbt);
+                        sname=name.getText().toString().trim();
+                        semail=email.getText().toString().trim();
+                        sphone=phone.getText().toString().trim();
+                        spassword=password.getText().toString().trim();
 
-                        if(semail.length()==0||sname.length()==0||sphone.length()==0||spassword.length()==0){
+                    }else {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            signup.setBackgroundResource(R.drawable.smallbt);
 
-                            if(sname.length()==0)
-                                name.setError("Please Enter Your Name");
-                        }
-                        if (spassword.length() < 4) {
-                            password.setError("Please Enter More Than 3 Characters");
-                        }
+                            if(semail.length()==0||sname.length()==0||sphone.length()==0||spassword.length()==0){
+
+                                if(sname.length()==0)
+                                    name.setError("Please Enter Your Name");
+                            }
+                            if (spassword.length() < 4) {
+                                password.setError("Please Enter More Than 3 Characters");
+                            }
                             if(semail.length()==0)
-                            email.setError("Please Enter Email Address");
+                                email.setError("Please Enter Email Address");
                             else  if (!isValidEmail(semail)) {
 
                                 email.setError("Email Address Is Not Valid");
                             }
 
                             if(sphone.length()==0)
-                            phone.setError("Please Enter Mobile Number");
+                                phone.setError("Please Enter Mobile Number");
 
                             else if (sphone.length() < 10) {
                                 phone.setError("Invalid Mobile Number");
 
 
 
-                        }else {
+                            }else {
 
-                            if (!isValidEmail(semail)) {
+                                if (!isValidEmail(semail)) {
 
-                                email.setError("Email Address Is Not Valid");
-                            }  else if (sphone.length() < 10) {
-                                phone.setError("Invalid Mobile Number");
-                            } else if (spassword.length() < 4) {
-                                password.setError("Please Enter More Than 3 Characters");
-                            } else {
-                                InputMethodManager imm = (InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
-                                AsyncforSignup async = new AsyncforSignup();
-                                async.execute();
+                                    email.setError("Email Address Is Not Valid");
+                                }  else if (sphone.length() < 10) {
+                                    phone.setError("Invalid Mobile Number");
+                                } else if (spassword.length() < 4) {
+                                    password.setError("Please Enter More Than 3 Characters");
+                                } else {
+                                    InputMethodManager imm = (InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);
+                                    imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
+                                    AsyncforSignup async = new AsyncforSignup();
+                                    async.execute();
+                                }
                             }
                         }
                     }
+
+
+                }else{
+                    Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
 
                 return true;

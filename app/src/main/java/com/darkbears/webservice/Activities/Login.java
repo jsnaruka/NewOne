@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.darkbears.webservice.R;
+import com.darkbears.webservice.classes.NetworkUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONObject;
@@ -40,6 +41,7 @@ public class Login extends ActionBarActivity {
     Button login,signupnow;
     String semail,spassword,getemail;
     ImageView showpassword;
+    NetworkUtils utils ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class Login extends ActionBarActivity {
         setContentView(R.layout.activity_login);
         initialize();
         initonclicklistner();
+        utils = new NetworkUtils(Login.this);
         getemail=getIntent().getStringExtra("emailaddress");
         email.setText(getemail);
     }
@@ -56,30 +59,35 @@ public class Login extends ActionBarActivity {
         login.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_DOWN){
-                    login.setBackgroundResource(R.drawable.greenbt);
-                    semail=email.getText().toString();
-                    spassword=password.getText().toString();
+                if(utils.isConnectingToInternet()){
+                    if(event.getAction()==MotionEvent.ACTION_DOWN){
+                        login.setBackgroundResource(R.drawable.greenbt);
+                        semail=email.getText().toString();
+                        spassword=password.getText().toString();
 
-                }else if (event.getAction()==MotionEvent.ACTION_UP){
-                    login.setBackgroundResource(R.drawable.smallbt);
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
-                    if(semail.length()==0||password.length()==0||!isValidEmail(semail)){
-                        if(password.length()==0)
-                            password.setError("Please Enter Your Password");
-                        if(semail.length()==0)
-                            email.setError("Please Enter Email Address");
-                        else  if (!isValidEmail(semail)) {
+                    }else if (event.getAction()==MotionEvent.ACTION_UP){
+                        login.setBackgroundResource(R.drawable.smallbt);
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(password.getWindowToken(), 0);
+                        if(semail.length()==0||password.length()==0||!isValidEmail(semail)){
+                            if(password.length()==0)
+                                password.setError("Please Enter Your Password");
+                            if(semail.length()==0)
+                                email.setError("Please Enter Email Address");
+                            else  if (!isValidEmail(semail)) {
 
-                            email.setError("Email Address Is Not Valid");
+                                email.setError("Email Address Is Not Valid");
+                            }
+                        }else {
+
+                            Asyncforlogin async = new Asyncforlogin();
+                            async.execute();
                         }
-                    }else {
-
-                        Asyncforlogin async = new Asyncforlogin();
-                        async.execute();
                     }
+                }else{
+                    Toast.makeText(Login.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
+
                 return true;
             }
         });
@@ -216,8 +224,7 @@ public class Login extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(), "Welcome  "+name, Toast.LENGTH_SHORT).show();
                 finish();
             }else if (status==0){
-                email.setError("Either email address or password is incorrect");
-                password.setError("Either email address or password is incorrect");
+                Toast.makeText(getApplicationContext(), "Either email address or password is incorrect", Toast.LENGTH_SHORT).show();
             }
 
         }
