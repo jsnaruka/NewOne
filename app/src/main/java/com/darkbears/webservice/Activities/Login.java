@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.darkbears.webservice.R;
@@ -37,6 +39,7 @@ public class Login extends ActionBarActivity {
     MaterialEditText email,password;
     Button login,signupnow;
     String semail,spassword,getemail;
+    ImageView showpassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,24 @@ public class Login extends ActionBarActivity {
                 return true;
             }
         });
+
+        showpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(showpassword.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.visible).getConstantState())) {
+                    password.setTransformationMethod(null);
+                    showpassword.setImageResource(R.drawable.invisible);
+                    int endOfFirstLine = password.getLayout().getLineEnd(0);
+                    password.setSelection(endOfFirstLine);
+                }
+                else {
+                    password.setTransformationMethod(new PasswordTransformationMethod());
+                    showpassword.setImageResource(R.drawable.visible);
+                    int endOfFirstLine = password.getLayout().getLineEnd(0);
+                    password.setSelection(endOfFirstLine);
+                }
+            }
+        });
     }
 
     private void initialize() {
@@ -103,6 +124,7 @@ public class Login extends ActionBarActivity {
         password=(MaterialEditText)findViewById(R.id.editText2);
         login=(Button)findViewById(R.id.button);
         signupnow=(Button)findViewById(R.id.button2);
+        showpassword=(ImageView)findViewById(R.id.imageView2);
 
     }
 
