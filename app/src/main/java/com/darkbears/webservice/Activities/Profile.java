@@ -175,6 +175,7 @@ public class Profile extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             Bitmap yourSelectedImage = null;
             Uri selectedImage=null;
+            //hello
 
            // System.out.println("uri"+selectedImage);
            // Uri myuri=Uri.parse("content://media/external/images/media/191028");
