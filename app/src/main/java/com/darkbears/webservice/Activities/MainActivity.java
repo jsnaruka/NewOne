@@ -242,6 +242,7 @@ ProgressDialog pDialog;
 
                 Intent in = new Intent(getApplicationContext(), Login.class);
                 in.putExtra("emailaddress",semail);
+             System.out.println("Hello");
                 startActivity(in);
                 finish();
 
